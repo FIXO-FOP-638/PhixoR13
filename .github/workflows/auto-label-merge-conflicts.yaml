@@ -1,0 +1,31 @@
+name: Auto-label merge conflicts
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Label merge conflicts
+        uses: eps1lon/actions-label-merge-conflict@v3
+        with:
+          dirtyLabel: "conflicts"
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          retryAfter: 5
+          retryMax: 3
+
+      - name: Report status
+        if: always()
+        run: echo "Workflow completed successfully ✅"
